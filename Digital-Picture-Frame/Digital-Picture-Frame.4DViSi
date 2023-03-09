@@ -1,0 +1,83 @@
+﻿Version     0.0
+Platform    Gen4-uLCD-43DCT-CLB-L
+PlatRes     272x480
+Depends
+end
+Options
+    Visualizer
+    Speed                        9600
+    Checksum                     No
+    ResponseSize                 2
+    Multidrop                    No
+    Destination                  1
+    DestBank                     0
+    MainForm                     0
+    SndBuf                       0
+    ButtonDisable                No
+    SignedDigits                 No
+    MaxString                    75
+    ComPort                      0
+    ComTX1pinIdx                 0
+    ComRX1pinIdx                 0
+    FileSystem                   FATfs
+    FlashEraseOption             Optimal
+    SPIenable                    0
+    SPIsdo                       3
+    SPIsdi                       2
+    SPIsck                       1
+    ForceProgramFlash            No
+    FlashForceLT16MB             No
+end
+Form
+    Name                         Form1
+    Alias                        Form1
+    Bgtype                       Color
+    Color                        WHITE
+    Image                        (None)
+    Source.Height                0
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 0
+    OnActivate                   ''
+    OnCreate                     ''
+    OnRepeat                     ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+UserImages
+    Name                         Userimages1
+    Alias                        Userimages1
+    Height                       221
+    Images                       Untitled-3_0000_pexels-photo.png\nUntitled-3_0001_pexels-photo-97906.png\nUntitled-3_0002_15094396_525706544292789_3434392346966461763_n.png\nUntitled-3_0003_15439962_1374073712626857_7697118472497340377_n.png\nUntitled-3_0004_15193612_531224433741000_35671628016987256_n.png\nUntitled-3_0005_15894825_1408555769178651_6925724164303954310_n.png\nUntitled-3_0006_16864156_263663200742000_9109523660501167387_n.png\nUntitled-3_0007_pexels-photo-325526.png\nUntitled-3_0008_pexels-photo-280361.png\nUntitled-3_0009_pexels-photo-273238.png\nUntitled-3_0010_pexels-photo-269633.png\nUntitled-3_0011_pexels-photo-106947.png\nUntitled-3_0012_pexels-photo-100745.png\nUntitled-3_0013_pexels-photo-89387.png\nUntitled-3_0014_pexels-photo-52953.png\nUntitled-3_0015_IMG_1752.png\nUntitled-3_0016_IMG_6595.png\nUntitled-3_0017_IMG_6354.png
+    Left                         28
+    Stretch                      Yes
+    Top                          24
+    Width                        426
+    OnChanged                    ''
+end
+AniButton
+    Name                         Anibutton1
+    Alias                        Anibutton1
+    Height                       272
+    Images                       Frame2.2.png
+    Interval                     100
+    Left                         0
+    Matrix                       -1
+    Momentary                    Yes
+    Stretch                      Yes
+    Top                          0
+    Width                        480
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages2
+    Alias                        Userimages2
+    Height                       221
+    Images                       0.png\n0.01.png\n0.02.png\n0.03.png\n0.04.png\n0.05.png\n0.06.png\n0.07.png
+    Left                         27
+    Stretch                      Yes
+    Top                          25
+    Width                        426
+    OnChanged                    ''
+end

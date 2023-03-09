@@ -1,0 +1,591 @@
+#platform "uLCD-220RD"
+//220RD WristWatch Project for 4D Makers
+//GUI and Code by Kevin Basence
+//RTC I2C Code by Ferdinand Santiago Jr.
+#inherit "4DGL_16bitColours.fnc"
+#inherit "VisualConst.inc"
+#inherit "Digital-ClockConst.inc"
+#inherit "LedDigitsDisplay.inc"     //Library for LED Digits
+
+#constant CLOCK_ADDRESS 0x68
+
+#CONST
+    NORMAL
+    SET_TIME
+    LOCK
+    OPEN
+    SET_HOUR
+    SET_MINUTE
+    SET_DAY
+    SET_DATE
+    SET_MONTH
+    SET_YEAR
+    SET_TIME_COMPLETE
+    PLUS_BUTTON PA2
+    MINUS_BUTTON PA3
+    LOCK_BUTTON PA4
+#END
+
+//Variables
+var hour, minute, today, date, month, year;
+var newHour, newMinute, newToday, newDate, newMonth, newYear;
+var mode := NORMAL;
+var lockbutton := OPEN;
+var setTheTime;
+var cntrst :=15;
+
+func main()
+    //SD Card Search Routine
+    putstr("Mounting...\n");
+    if (!(file_Mount()))
+        while(!(file_Mount()))
+            putstr("Drive not mounted...");
+            pause(200);
+            gfx_Cls();
+            pause(200);
+        wend
+    endif
+    //File Handler
+    hndl := file_LoadImageControl("220RDWW.dat", "220RDWW.gci", 1);
+    //Initializations
+    gfx_ScreenMode(PORTRAIT);
+    I2C1_Open(I2C_MED, PA0, PA1); //PA0 - SCL PA1 - SDA
+    pin_Set(PIN_INP_LO, PA2);
+    pin_Set(PIN_INP_LO, PA3);
+    pin_Set(PIN_INP_LO, PA4);  //lock/open screen button
+
+    gfx_Cls();
+    displayNormalMode();
+
+    //To set the RTC time and date for Debugging purposes
+    //setTime(10,13,00);            // to set time setTime();
+    //setDay(5);
+    //setDate(02,2,17);
+
+    repeat
+        //Await button activity
+        Buttons();
+        //Operating Modes
+        if(mode == NORMAL)
+            NormalMode();
+        else if(mode == SET_TIME)
+            SetTimeMode();
+        endif
+    forever
+endfunc
+
+// I2C begin transmission
+func beginTransmission(var device_address)
+    I2C1_Start();
+    I2C1_Write(device_address << 1|0);
+endfunc
+// I2C request
+func requestFrom(var device_address)
+    I2C1_Stop();
+    I2C1_Start();
+    I2C1_Write(device_address << 1|1);
+endfunc
+// I2C end Transmission
+func endTransmission()
+    I2C1_Stop();
+endfunc
+
+// decimal to BCD conversion
+func decToBCD(var val)
+    return( (val/10*16) + (val%10));
+endfunc
+// BCD to decimal conversion
+func BCDtodec(var val)
+    return( (val/16*10) + (val%16));
+endfunc
+// get seconds
+func getSecond()
+    var *sec;
+    beginTransmission(CLOCK_ADDRESS);
+    I2C1_Write(0x00);
+    endTransmission();
+    beginTransmission(CLOCK_ADDRESS);
+    requestFrom(CLOCK_ADDRESS);
+    sec := BCDtodec(I2C1_Read());
+    I2C1_Nack();
+    return sec;
+endfunc
+
+func getMinute()
+    var min;
+    beginTransmission(CLOCK_ADDRESS);
+    I2C1_Write(0x01);
+    endTransmission();
+    beginTransmission(CLOCK_ADDRESS);
+    requestFrom(CLOCK_ADDRESS);
+    min := BCDtodec(I2C1_Read());
+    I2C1_Nack();
+    return min;
+endfunc
+
+func getHour()
+    var hr;
+    beginTransmission(CLOCK_ADDRESS);
+    I2C1_Write(0x02);
+    endTransmission();
+    beginTransmission(CLOCK_ADDRESS);
+    requestFrom(CLOCK_ADDRESS);
+    hr := BCDtodec(I2C1_Read());
+    I2C1_Nack();
+    return hr;
+endfunc
+
+func getDayoftheWeek()
+    var weekday;
+    beginTransmission(CLOCK_ADDRESS);
+    I2C1_Write(0x03);
+    endTransmission();
+    beginTransmission(CLOCK_ADDRESS);
+    requestFrom(CLOCK_ADDRESS);
+    weekday := BCDtodec(I2C1_Read());
+    I2C1_Nack();
+    return weekday;
+endfunc
+
+func getDayoftheMonth()
+    var date;
+    beginTransmission(CLOCK_ADDRESS);
+    I2C1_Write(0x04);
+    endTransmission();
+    beginTransmission(CLOCK_ADDRESS);
+    requestFrom(CLOCK_ADDRESS);
+    date := BCDtodec(I2C1_Read());
+    I2C1_Nack();
+    return date;
+endfunc
+
+func getMonth()
+    var month;
+    beginTransmission(CLOCK_ADDRESS);
+    I2C1_Write(0x05);
+    endTransmission();
+    beginTransmission(CLOCK_ADDRESS);
+    requestFrom(CLOCK_ADDRESS);
+    month := BCDtodec(I2C1_Read());
+    I2C1_Nack();
+    return month;
+endfunc
+
+func getYear()
+    var year;
+    beginTransmission(CLOCK_ADDRESS);
+    I2C1_Write(0x06);
+    endTransmission();
+    beginTransmission(CLOCK_ADDRESS);
+    requestFrom(CLOCK_ADDRESS);
+    year := BCDtodec(I2C1_Read());
+    I2C1_Nack();
+    return year;
+endfunc
+
+func day(var today)
+    if(today == 1)
+        print("SUNDAY");
+    else if(today == 2)
+        print("MONDAY");
+    else if(today == 3)
+        print("TUESDAY");
+    else if(today == 4)
+        print("WEDNESDAY");
+    else if(today == 5)
+        print("THURSDAY");
+    else if(today == 6)
+        print("FRIDAY");
+    else if(today == 7)
+        print("SATURDAY");
+    endif
+endfunc
+
+func Month(var curMonth)
+    if(curMonth == 1)
+        print("January");
+    else if(curMonth == 2)
+        print("February");
+    else if(curMonth == 3)
+        print("March");
+    else if(curMonth == 4)
+        print("April");
+    else if(curMonth == 5)
+        print("May");
+    else if(curMonth == 6)
+        print("June");
+    else if(curMonth == 7)
+        print("July");
+    else if(curMonth == 8)
+        print("August");
+    else if(curMonth == 9)
+        print("September");
+    else if(curMonth == 10)
+        print("October");
+    else if(curMonth == 11)
+        print("November");
+    else if(curMonth == 12)
+        print("December");
+    endif
+
+endfunc
+
+func setTime(var hour, var minute, var seconds)
+    beginTransmission(CLOCK_ADDRESS);
+    I2C1_Write(0x00);
+    I2C1_Write(decToBCD(seconds));
+    I2C1_Write(decToBCD(minute));
+    I2C1_Write(decToBCD(hour));
+    endTransmission();
+endfunc
+
+func setDay(var day)
+    beginTransmission(CLOCK_ADDRESS);
+    I2C1_Write(0x03);
+    I2C1_Write(decToBCD(day));
+    endTransmission();
+endfunc
+
+func setDate(var date, var month, var year)
+    beginTransmission(CLOCK_ADDRESS);
+    I2C1_Write(0x04);
+    I2C1_Write(decToBCD(date));
+    I2C1_Write(decToBCD(month));
+    I2C1_Write(decToBCD(year));
+    endTransmission();
+endfunc
+
+func displayNormalMode()
+    img_Show(hndl, iHours);
+    img_Show(hndl, iMinutes);
+endfunc
+
+func NormalMode()
+            hour := getHour();
+            ledDigitsDisplay(hour, iHours+1, 68, 2, 1, 47, 0) ;
+
+            minute := getMinute();
+            ledDigitsDisplay(minute, iMinutes+1, 68, 2, 1, 47, 0) ;
+
+            txt_MoveCursor(15,10);
+            day(getDayoftheWeek());
+            print("  ");
+            txt_MoveCursor(16,6);
+            Month(getMonth());
+            print(" ");
+            print(getDayoftheMonth());
+            print(", 20");
+            print(getYear());
+            print("  ");
+
+endfunc
+
+func displaySetTimeMode()
+
+    img_Show(hndl,iStatictext1) ;
+    img_Show(hndl,iStatictext2) ;
+    img_Show(hndl,iStatictext3) ;
+    img_Show(hndl,iStatictext4) ;
+    img_Show(hndl,iStatictext5) ;
+    img_Show(hndl,iStatictext6) ;
+
+    img_Show(hndl, iLeddigits1);
+    ledDigitsDisplay(0, iLeddigits1+1, 36, 2, 1, 29, 0) ;
+    img_Show(hndl, iLeddigits2);
+    ledDigitsDisplay(0, iLeddigits2+1, 124, 2, 1, 29, 0) ;
+    img_Show(hndl, iLeddigits4);
+    ledDigitsDisplay(0, iLeddigits4+1, 24, 2, 1, 29, 0) ;
+    img_Show(hndl, iLeddigits5);
+    ledDigitsDisplay(0, iLeddigits5+1, 84, 2, 1, 29, 0) ;
+    img_Show(hndl, iLeddigits6);
+    ledDigitsDisplay(0, iLeddigits6+1, 144, 2, 1, 29, 0) ;
+
+    txt_MoveCursor(9,9);
+    print("_________");
+    gfx_RectangleFilled(40, 82, 90, 95, RED) ;
+
+endfunc
+
+func fade()
+    var contrast;
+    for (contrast := 15; contrast >= 0; contrast--)
+        gfx_Contrast(contrast);
+        pause(20);
+    next
+endfunc
+
+func show()
+    var contrast;
+    for (contrast := 0; contrast <= 15; contrast++)
+        gfx_Contrast(contrast);
+        pause(20);
+    next
+endfunc
+
+func Buttons()
+        //Button Operations During Normal Mode
+        if(mode == NORMAL)
+            //Enter Set Time Mode during Normal Mode
+            if(pin_Read(MINUS_BUTTON) == 0 && pin_Read(PLUS_BUTTON) == 0)
+                pause(200);
+                fade();
+                gfx_Cls();
+                displaySetTimeMode();
+                mode := SET_TIME;
+                setTheTime := SET_HOUR;
+                show();
+            //Lock/Open the screen
+            else if(pin_Read(LOCK_BUTTON) == 0)
+                if(lockbutton == OPEN)
+                    fade();
+                    lockbutton := LOCK;
+                    pause(200);
+                else if(lockbutton == LOCK)
+                    lockbutton := OPEN;
+                    show();
+                    pause(200);
+                endif
+            //Increase contrast
+            else if(pin_Read(PLUS_BUTTON) == 0)
+                cntrst++;
+                    if(cntrst > 15)
+                        cntrst := 15;
+                    endif
+                        gfx_Contrast(cntrst);
+                        pause(200);
+            //Decrease contrast
+            else if(pin_Read(MINUS_BUTTON) == 0)
+                cntrst--;
+                    if(cntrst < 0)
+                        cntrst := 0;
+                    endif
+                        gfx_Contrast(cntrst);
+                        pause(200);
+            endif
+
+
+        else if(mode == SET_TIME)
+
+            //Return to Normal Mode
+            if(pin_Read(PLUS_BUTTON) == 0 && pin_Read(MINUS_BUTTON) == 0)
+                fade();
+                gfx_Cls();
+                displayNormalMode();
+                mode := NORMAL;
+                show();
+                pause(200);
+
+
+            //Accept the new time values using lock button
+            else if(pin_Read(LOCK_BUTTON) == 0)
+                if(setTheTime == SET_HOUR)
+                    hour := newHour;
+                    setTheTime := SET_MINUTE;
+                    pause(200);
+                    gfx_RectangleFilled(40, 82, 90, 95, BLACK) ;
+                    gfx_RectangleFilled(124, 82, 176, 95, RED) ;
+                else if(setTheTime == SET_MINUTE)
+                    minute := newMinute;
+                    setTheTime := SET_DAY;
+                    pause(200);
+                    gfx_RectangleFilled(124, 82, 176, 95, BLACK) ;
+                    gfx_RectangleFilled(82, 125, 142, 133, RED) ;
+                else if(setTheTime == SET_DAY)
+                    today := newToday;
+                    setTheTime := SET_DATE;
+                    pause(200);
+                    gfx_RectangleFilled(82, 125, 142, 133, BLACK) ;
+                    gfx_RectangleFilled(28, 176, 80, 189, RED) ;
+                else if(setTheTime == SET_DATE)
+                    date := newDate;
+                    setTheTime := SET_MONTH;
+                    pause(200);
+                    gfx_RectangleFilled(84, 192, 139, 205, RED) ;
+                    gfx_RectangleFilled(28, 176, 80, 189, BLACK) ;
+                else if(setTheTime == SET_MONTH)
+                    month := newMonth;
+                    setTheTime := SET_YEAR;
+                    pause(200);
+                    gfx_RectangleFilled(144, 176, 196, 189, RED) ;
+                    gfx_RectangleFilled(84, 192, 139, 205, BLACK) ;
+                else if(setTheTime == SET_YEAR)
+                    year := newYear;
+                    setTheTime := SET_TIME_COMPLETE;
+                    pause(200);
+                endif
+
+
+            //Adjust the time values using plus button(increase)
+            else if(pin_Read(PLUS_BUTTON) == 0)
+                //Adjust the HOUR
+                if(setTheTime == SET_HOUR)
+                    newHour++;
+                        if(newHour > 24)
+                            newHour := 0;
+                        endif
+                    ledDigitsDisplay(newHour, iLeddigits1+1, 36, 2, 1, 29, 0) ;
+                    pause(200);
+                //Adjust the minute
+                else if(setTheTime == SET_MINUTE)
+                    newMinute++;
+                        if(newMinute > 60)
+                            newMinute := 0;
+                        endif
+                    ledDigitsDisplay(newMinute, iLeddigits2+1, 124, 2, 1, 29, 0) ;
+                    pause(200);
+                else if(setTheTime == SET_DAY)
+                    newToday++;
+                        if(newToday > 7)
+                            newToday := 1;
+                        endif
+                        txt_MoveCursor(9,9);
+                                if(newToday == 1)
+                                    print(" SUNDAY ");
+                                else if(newToday == 2)
+                                    print(" MONDAY ");
+                                else if(newToday == 3)
+                                    print(" TUESDAY ");
+                                else if(newToday == 4)
+                                    print(" WEDNESDAY ");
+                                else if(newToday == 5)
+                                    print(" THURSDAY ");
+                                else if(newToday == 6)
+                                    print(" FRIDAY ");
+                                else if(newToday == 7)
+                                    print(" SATURDAY ");
+                                endif
+                    pause(200);
+                else if(setTheTime == SET_DATE)
+                    newDate++;
+                        if(newDate > 31)
+                            newDate := 0;
+                        endif
+                    ledDigitsDisplay(newDate, iLeddigits4+1, 24, 2, 1, 29, 0) ;
+                    pause(200);
+                else if(setTheTime == SET_MONTH)
+                    newMonth++;
+                        if(newMonth > 12)
+                            newMonth := 0;
+                        endif
+                    ledDigitsDisplay(newMonth, iLeddigits5+1, 84, 2, 1, 29, 0) ;
+                    pause(200);
+                else if(setTheTime == SET_YEAR)
+                     newYear++;
+                        if(newYear > 99)
+                            newYear := 0;
+                        endif
+                    ledDigitsDisplay(newYear, iLeddigits6+1, 144, 2, 1, 29, 0) ;
+                    pause(200);
+                endif
+
+
+            //Adjust the time value using the minus button(decrease)
+            else if(pin_Read(MINUS_BUTTON) == 0)
+                if(setTheTime == SET_HOUR)
+                        if(newHour < 0)
+                            newHour := 24;
+                            ledDigitsDisplay(newHour, iLeddigits1+1, 36, 2, 1, 29, 0) ;
+                            pause(200);
+                        else
+                            newHour--;
+                            ledDigitsDisplay(newHour, iLeddigits1+1, 36, 2, 1, 29, 0) ;
+                            pause(200);
+                        endif
+                else if(setTheTime == SET_MINUTE)
+                    if(newMinute < 0)
+                        newMinute := 60;
+                        ledDigitsDisplay(newMinute, iLeddigits2+1, 124, 2, 1, 29, 0) ;
+                        pause(200);
+                    else
+                        newMinute--;
+                        ledDigitsDisplay(newMinute, iLeddigits2+1, 124, 2, 1, 29, 0) ;
+                        pause(200);
+                    endif
+                else if(setTheTime == SET_DAY)
+                     newToday--;
+                        if(newToday < 0)
+                            newToday := 7;
+                        endif
+                            txt_MoveCursor(9,9);
+                                if(newToday == 1)
+                                    print(" SUNDAY ");
+                                else if(newToday == 2)
+                                    print(" MONDAY ");
+                                else if(newToday == 3)
+                                    print(" TUESDAY ");
+                                endif
+
+                                if(newToday == 4)
+                                    print(" WEDNESDAY ");
+                                else if(newToday == 5)
+                                    print(" THURSDAY ");
+                                else if(newToday == 6)
+                                    print(" FRIDAY ");
+                                else if(newToday == 7)
+                                    print(" SATURDAY ");
+                                endif
+                    pause(200);
+                else if(setTheTime == SET_DATE)
+                    newDate--;
+                        if(newDate < 0)
+                            newDate := 31;
+                        endif
+                    ledDigitsDisplay(newDate, iLeddigits4+1, 24, 2, 1, 29, 0) ;
+                    pause(200);
+                else if(setTheTime == SET_MONTH)
+                    newMonth--;
+                        if(newMonth < 0)
+                            newMonth := 12;
+                        endif
+                    ledDigitsDisplay(newMonth, iLeddigits5+1, 84, 2, 1, 29, 0) ;
+                    pause(200);
+                else if(setTheTime == SET_YEAR)
+                    newYear--;
+                        if(newYear < 0)
+                            newYear := 99;
+                        endif
+                    ledDigitsDisplay(newYear, iLeddigits6+1, 144, 2, 1, 29, 0) ;
+                    pause(200);
+                endif
+            endif
+        endif
+endfunc
+
+func SetTimeMode()
+    if(setTheTime == SET_TIME_COMPLETE)
+        setTime(hour, minute, 0);
+        setDay(today);
+        setDate(date, month, year);
+
+        newHour := 0;
+        newMinute := 0;
+        newToday := 0;
+        newDate := 0;
+        newMonth := 0;
+        newYear := 0;
+
+        fade();
+        gfx_Cls();
+        displayNormalMode();
+        mode := NormalMode();
+        show();
+    endif
+endfunc
+
+        //Press the plus and minus at the same time to activate Set_Time Mode.
+        //Using the 3 buttons, lockbutton, plus button, minus button. Users can set the time by adding and subtracting the hours/minutes
+        //and accepting the value by pressing the lockbutton.
+
+        //First values to be adjusted is the TIME, HOURS then MINUTES.
+        //Hours(0-24)
+        //Minutes(0-60)
+
+        //Next values to be adjusted is the DAY of the week (1 = Sunday, 2 = Monday, 3 = Tuesday, 4 = Wednesday, 5 = Thursday, 6 = Saturday)
+
+        //Last values to be adjusted is the DATE, DATE, MONTH then YEAR
+        //Date
+
+        //MONTH(1=Jan,2=Feb,3=Mar,4=Apr,5=May,6=Jun,7=Jul,8=Aug,9=Sep,10=Oct,11=Nov,12=Dec)
+
+        //Year
+

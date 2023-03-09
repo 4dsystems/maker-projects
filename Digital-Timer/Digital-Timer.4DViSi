@@ -1,0 +1,655 @@
+﻿Version     0.0
+Platform    Gen4-uLCD-50DCT-CLB-L
+PlatRes     480x800
+Depends
+end
+Options
+    Visualizer
+    Speed                        9600
+    Checksum                     No
+    ResponseSize                 2
+    Multidrop                    No
+    Destination                  1
+    DestBank                     0
+    MainForm                     0
+    SndBuf                       0
+    ButtonDisable                No
+    SignedDigits                 Yes
+    MaxString                    75
+    ComPort                      0
+    ComTX1pinIdx                 0
+    ComRX1pinIdx                 0
+    FileSystem                   FATfs
+    FlashEraseOption             Optimal
+    SPIenable                    0
+    SPIsdo                       3
+    SPIsdi                       2
+    SPIsck                       1
+    ForceProgramFlash            No
+    FlashForceLT16MB             No
+end
+Form
+    Name                         Form1
+    Alias                        Form1
+    Bgtype                       Image
+    Color                        BLACK
+    Image                        BG_stopwatch_final.png
+    Source.Height                480
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 800
+    OnActivate                   ''
+    OnCreate                     ''
+    OnRepeat                     ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+UserImages
+    Name                         Userimages1
+    Alias                        Userimages1
+    Height                       55
+    Images                       pn_0001_STOPWATCH.png\npn_0002_TIMER.png\npn_0000_SPLIT-TIMER.png
+    Left                         4
+    Stretch                      No
+    Top                          8
+    Width                        235
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages2
+    Alias                        Userimages2
+    Height                       55
+    Images                       pn_0000_1.png\npn_0002_2.png\npn_0001_3.png
+    Left                         24
+    Stretch                      No
+    Top                          408
+    Width                        235
+    OnChanged                    ''
+end
+SmartKnob
+    Name                         SmartKnob1
+    Alias                        SmartKnob1
+    Config                       SmartKnob1
+    Left                         16
+    MaxAngle                     210
+    MinAngle                     -30
+    Top                          104
+    OnChanged                    ''
+    OnChanging                   ''
+end
+UserButton
+    Name                         Userbutton1
+    Alias                        Userbutton1
+    Height                       100
+    Images                       START.png\nPAUSE.png
+    Left                         388
+    Matrix                       -1
+    Momentary                    Yes
+    Stretch                      No
+    Top                          356
+    Width                        150
+    OnChanged                    ''
+end
+UserButton
+    Name                         Userbutton2
+    Alias                        Userbutton2
+    Height                       100
+    Images                       RESET.png\nRESET_.png
+    Left                         544
+    Matrix                       -1
+    Momentary                    Yes
+    Stretch                      No
+    Top                          356
+    Width                        150
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages3
+    Alias                        Userimages3
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         474
+    Stretch                      No
+    Top                          230
+    Width                        38
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages4
+    Alias                        Userimages4
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         511
+    Stretch                      No
+    Top                          230
+    Width                        38
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages5
+    Alias                        Userimages5
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         573
+    Stretch                      No
+    Top                          229
+    Width                        38
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages6
+    Alias                        Userimages6
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         610
+    Stretch                      No
+    Top                          229
+    Width                        38
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages7
+    Alias                        Userimages7
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         665
+    Stretch                      No
+    Top                          230
+    Width                        38
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages8
+    Alias                        Userimages8
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         702
+    Stretch                      No
+    Top                          230
+    Width                        38
+    OnChanged                    ''
+end
+StaticText
+    Name                         Statictext1
+    Alias                        Statictext1
+    Alignment                    Left
+    AutoSize                     Yes
+    Caption                      :
+    Color                        BLACK
+    Font.Color                   WHITE
+    Font.Effects                 []
+    Font.Name                    Tahoma
+    Font.Size                    36
+    Font.Style                   []
+    Height                       58
+    Left                         552
+    Top                          229
+    Transparent                  Yes
+    Width                        17
+    WordWrap                     Yes
+end
+StaticText
+    Name                         Statictext2
+    Alias                        Statictext2
+    Alignment                    Left
+    AutoSize                     Yes
+    Caption                      :
+    Color                        BLACK
+    Font.Color                   WHITE
+    Font.Effects                 []
+    Font.Name                    Tahoma
+    Font.Size                    36
+    Font.Style                   []
+    Height                       58
+    Left                         648
+    Top                          229
+    Transparent                  Yes
+    Width                        13
+    WordWrap                     Yes
+end
+SmartGauge
+    Name                         SmartGauge1
+    Alias                        SmartGauge1
+    Config                       SmartGauge1
+    Left                         332
+    Top                          52
+    OnChanged                    ''
+end
+Form
+    Name                         Form2
+    Alias                        Form2
+    Bgtype                       Image
+    Color                        BLACK
+    Image                        BG_timer.png
+    Source.Height                480
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 800
+    OnActivate                   ''
+    OnCreate                     ''
+    OnRepeat                     ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+GSlider
+    Name                         Slider1
+    Alias                        Slider1
+    Bevel.BorderColor            clBtnFace
+    Bevel.BorderWidth            0
+    Bevel.InnerColor             BLACK
+    Bevel.InnerHighlight         clBtnHighlight
+    Bevel.InnerOutline           None
+    Bevel.InnerShadow            clBtnShadow
+    Bevel.InnerSpace             1
+    Bevel.InnerStyle             Lowered
+    Bevel.Innerwidth             2
+    Bevel.OuterColor             clBtnFace
+    Bevel.OuterHighlight         clBtnHighlight
+    Bevel.OuterOutline           Outer
+    Bevel.OuterShadow            clBtnShadow
+    Bevel.OuterSpace             0
+    Bevel.OuterStyle             Raised
+    Bevel.Outerwidth             1
+    Bevel.Visible                Yes
+    BorderColor                  0xF0F0F0
+    BorderWidth                  1
+    Color                        0xFFFF8D
+    Height                       20
+    Left                         332
+    Maxvalue                     59
+    Minvalue                     0
+    Orientation                  Horizontal
+    Palette.High                 0xFFFF8D
+    Palette.Low                  0xA2A300
+    Spacing                      1
+    SolidFill                    Yes
+    TickWidth                    5
+    Top                          416
+    Width                        450
+    OnChanged                    ''
+    OnChanging                   ''
+end
+GSlider
+    Name                         Slider2
+    Alias                        Slider2
+    Bevel.BorderColor            clBtnFace
+    Bevel.BorderWidth            0
+    Bevel.InnerColor             BLACK
+    Bevel.InnerHighlight         clBtnHighlight
+    Bevel.InnerOutline           None
+    Bevel.InnerShadow            clBtnShadow
+    Bevel.InnerSpace             1
+    Bevel.InnerStyle             Lowered
+    Bevel.Innerwidth             2
+    Bevel.OuterColor             clBtnFace
+    Bevel.OuterHighlight         clBtnHighlight
+    Bevel.OuterOutline           Outer
+    Bevel.OuterShadow            clBtnShadow
+    Bevel.OuterSpace             0
+    Bevel.OuterStyle             Raised
+    Bevel.Outerwidth             1
+    Bevel.Visible                Yes
+    BorderColor                  0xF0F0F0
+    BorderWidth                  1
+    Color                        0xFFFF8D
+    Height                       20
+    Left                         332
+    Maxvalue                     59
+    Minvalue                     0
+    Orientation                  Horizontal
+    Palette.High                 0xFFFF8D
+    Palette.Low                  0xA2A300
+    Spacing                      1
+    SolidFill                    Yes
+    TickWidth                    5
+    Top                          372
+    Width                        450
+    OnChanged                    ''
+    OnChanging                   ''
+end
+GSlider
+    Name                         Slider3
+    Alias                        Slider3
+    Bevel.BorderColor            clBtnFace
+    Bevel.BorderWidth            0
+    Bevel.InnerColor             BLACK
+    Bevel.InnerHighlight         clBtnHighlight
+    Bevel.InnerOutline           None
+    Bevel.InnerShadow            clBtnShadow
+    Bevel.InnerSpace             1
+    Bevel.InnerStyle             Lowered
+    Bevel.Innerwidth             2
+    Bevel.OuterColor             clBtnFace
+    Bevel.OuterHighlight         clBtnHighlight
+    Bevel.OuterOutline           Outer
+    Bevel.OuterShadow            clBtnShadow
+    Bevel.OuterSpace             0
+    Bevel.OuterStyle             Raised
+    Bevel.Outerwidth             1
+    Bevel.Visible                Yes
+    BorderColor                  0xF0F0F0
+    BorderWidth                  1
+    Color                        0xFFFF8D
+    Height                       20
+    Left                         332
+    Maxvalue                     59
+    Minvalue                     0
+    Orientation                  Horizontal
+    Palette.High                 0xFFFF8D
+    Palette.Low                  0xA2A300
+    Spacing                      1
+    SolidFill                    Yes
+    TickWidth                    5
+    Top                          324
+    Width                        450
+    OnChanged                    ''
+    OnChanging                   ''
+end
+UserImages
+    Name                         Userimages9
+    Alias                        Userimages9
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         316
+    Stretch                      No
+    Top                          172
+    Width                        38
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages10
+    Alias                        Userimages10
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         353
+    Stretch                      No
+    Top                          172
+    Width                        38
+    OnChanged                    ''
+end
+StaticText
+    Name                         Statictext3
+    Alias                        Statictext3
+    Alignment                    Left
+    AutoSize                     Yes
+    Caption                      :
+    Color                        BLACK
+    Font.Color                   WHITE
+    Font.Effects                 []
+    Font.Name                    Tahoma
+    Font.Size                    36
+    Font.Style                   []
+    Height                       58
+    Left                         394
+    Top                          172
+    Transparent                  Yes
+    Width                        17
+    WordWrap                     Yes
+end
+UserImages
+    Name                         Userimages11
+    Alias                        Userimages11
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         415
+    Stretch                      No
+    Top                          172
+    Width                        38
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages12
+    Alias                        Userimages12
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         452
+    Stretch                      No
+    Top                          172
+    Width                        38
+    OnChanged                    ''
+end
+StaticText
+    Name                         Statictext4
+    Alias                        Statictext4
+    Alignment                    Left
+    AutoSize                     Yes
+    Caption                      :
+    Color                        BLACK
+    Font.Color                   WHITE
+    Font.Effects                 []
+    Font.Name                    Tahoma
+    Font.Size                    36
+    Font.Style                   []
+    Height                       58
+    Left                         490
+    Top                          172
+    Transparent                  Yes
+    Width                        13
+    WordWrap                     Yes
+end
+UserImages
+    Name                         Userimages13
+    Alias                        Userimages13
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         507
+    Stretch                      No
+    Top                          172
+    Width                        38
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages14
+    Alias                        Userimages14
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         544
+    Stretch                      No
+    Top                          172
+    Width                        38
+    OnChanged                    ''
+end
+UserButton
+    Name                         Userbutton3
+    Alias                        Userbutton3
+    Height                       65
+    Images                       START_1.png\nPAUSE_1.png
+    Left                         656
+    Matrix                       -1
+    Momentary                    Yes
+    Stretch                      No
+    Top                          128
+    Width                        59
+    OnChanged                    ''
+end
+UserButton
+    Name                         Userbutton4
+    Alias                        Userbutton4
+    Height                       75
+    Images                       reset_1.png\nreset_2.png
+    Left                         696
+    Matrix                       -1
+    Momentary                    Yes
+    Stretch                      No
+    Top                          24
+    Width                        78
+    OnChanged                    ''
+end
+SmartGauge
+    Name                         SmartGauge2
+    Alias                        SmartGauge2
+    Config                       SmartGauge2
+    Left                         288
+    Top                          236
+    OnChanged                    ''
+end
+Form
+    Name                         Form3
+    Alias                        Form3
+    Bgtype                       Image
+    Color                        BLACK
+    Image                        BG_stopwatch.png
+    Source.Height                480
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 800
+    OnActivate                   ''
+    OnCreate                     ''
+    OnRepeat                     ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+UserButton
+    Name                         Userbutton5
+    Alias                        Userbutton5
+    Height                       75
+    Images                       reset_1.png\nreset_2.png
+    Left                         624
+    Matrix                       -1
+    Momentary                    Yes
+    Stretch                      No
+    Top                          48
+    Width                        78
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages15
+    Alias                        Userimages15
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         534
+    Stretch                      No
+    Top                          221
+    Width                        38
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages16
+    Alias                        Userimages16
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         497
+    Stretch                      No
+    Top                          221
+    Width                        38
+    OnChanged                    ''
+end
+StaticText
+    Name                         Statictext5
+    Alias                        Statictext5
+    Alignment                    Left
+    AutoSize                     Yes
+    Caption                      :
+    Color                        BLACK
+    Font.Color                   WHITE
+    Font.Effects                 []
+    Font.Name                    Tahoma
+    Font.Size                    36
+    Font.Style                   []
+    Height                       58
+    Left                         480
+    Top                          221
+    Transparent                  Yes
+    Width                        13
+    WordWrap                     Yes
+end
+UserImages
+    Name                         Userimages17
+    Alias                        Userimages17
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         442
+    Stretch                      No
+    Top                          221
+    Width                        38
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages18
+    Alias                        Userimages18
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         405
+    Stretch                      No
+    Top                          221
+    Width                        38
+    OnChanged                    ''
+end
+StaticText
+    Name                         Statictext6
+    Alias                        Statictext6
+    Alignment                    Left
+    AutoSize                     Yes
+    Caption                      :
+    Color                        BLACK
+    Font.Color                   WHITE
+    Font.Effects                 []
+    Font.Name                    Tahoma
+    Font.Size                    36
+    Font.Style                   []
+    Height                       58
+    Left                         384
+    Top                          221
+    Transparent                  Yes
+    Width                        17
+    WordWrap                     Yes
+end
+UserImages
+    Name                         Userimages19
+    Alias                        Userimages19
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         343
+    Stretch                      No
+    Top                          221
+    Width                        38
+    OnChanged                    ''
+end
+UserImages
+    Name                         Userimages20
+    Alias                        Userimages20
+    Height                       56
+    Images                       Untitled-1_0000_0.png\nUntitled-1_0001_1.png\nUntitled-1_0002_2.png\nUntitled-1_0003_3.png\nUntitled-1_0004_4.png\nUntitled-1_0005_5.png\nUntitled-1_0006_6.png\nUntitled-1_0007_7.png\nUntitled-1_0008_8.png\nUntitled-1_0009_9.png
+    Left                         306
+    Stretch                      No
+    Top                          221
+    Width                        38
+    OnChanged                    ''
+end
+UserButton
+    Name                         Userbutton6
+    Alias                        Userbutton6
+    Height                       65
+    Images                       START_1.png\nPAUSE_1.png
+    Left                         656
+    Matrix                       -1
+    Momentary                    Yes
+    Stretch                      No
+    Top                          168
+    Width                        59
+    OnChanged                    ''
+end
+UserButton
+    Name                         Userbutton7
+    Alias                        Userbutton7
+    Height                       96
+    Images                       split_split_1.png\nsplit_split_2.png
+    Left                         700
+    Matrix                       -1
+    Momentary                    Yes
+    Stretch                      No
+    Top                          8
+    Width                        92
+    OnChanged                    ''
+end
+SmartGauge
+    Name                         SmartGauge3
+    Alias                        SmartGauge3
+    Config                       SmartGauge3
+    Left                         280
+    Top                          276
+    OnChanged                    ''
+end

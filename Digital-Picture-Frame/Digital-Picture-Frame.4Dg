@@ -1,0 +1,63 @@
+#platform "Gen4-uLCD-43DCT-CLB"
+
+// Program Skeleton 1.2 generated 5/4/2017 3:35:41 PM
+
+#inherit "4DGL_16bitColours.fnc"
+
+#inherit "VisualConst.inc"
+
+#inherit "Digital-Picture-FrameConst.inc"
+
+var frame1;
+var frame2;
+
+func main()
+//  var hstrings ; // Handle to access uSD strings, uncomment if required
+//  var hFontx ;   // Handle to access uSD fonts, uncomment if required and change n to font number
+//  Uncomment the following if uSD images, fonts or strings used.
+
+    putstr("Mounting...\n");
+    if (!(file_Mount()))
+        while(!(file_Mount()))
+            putstr("Drive not ounted...");
+            pause(200);
+            gfx_Cls();
+            pause(200);
+        wend
+    endif
+    gfx_BGcolour(TRANSPARENT);
+    gfx_Cls();
+    hndl := file_LoadImageControl("DIGITA~2.dat", "DIGITA~2.gci", 1);
+    // Set the screen to portrait or landscape
+    gfx_Set(SCREEN_MODE,LANDSCAPE) ;
+
+
+    // Show all widgets
+    img_SetWord(hndl, iUserimages2, IMAGE_INDEX, frame2) ; // where frame is 0 to 7
+    img_Show(hndl,iUserimages2) ;
+    img_SetWord(hndl, iUserimages1, IMAGE_INDEX, frame1) ; // where frame is 0 to 11
+    img_Show(hndl,iUserimages1) ;
+    img_ClearAttributes(hndl, iAnibutton1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+    img_Show(hndl, iAnibutton1);  // show button, only do this once
+
+   repeat
+
+
+        // Opening
+        for (frame2:=0; frame2<7; frame2++)
+            img_SetWord(hndl, iUserimages2, IMAGE_INDEX, frame2) ; // where frame is 0 to 7
+            img_Show(hndl,iUserimages2) ;
+            pause(500);
+        next
+
+        pause(500);
+
+        for (frame1:=0; frame1<17; frame1++)
+            img_SetWord(hndl, iUserimages1, IMAGE_INDEX, frame1) ; // where frame is 0 to 7
+            img_Show(hndl,iUserimages1) ;
+            pause(1500);
+        next
+
+    forever
+endfunc
+

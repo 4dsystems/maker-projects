@@ -1,0 +1,1017 @@
+#platform "Gen4-uLCD-50DCT-CLB"
+
+
+// Program Skeleton 1.3 generated 8/10/2017 2:53:12 PM
+
+#inherit "4DGL_16bitColours.fnc"
+
+#inherit "VisualConst.inc"
+
+#inherit "Digital-TimerConst.inc"
+#inherit "XYposToDegree.inc"
+
+
+#CONST
+    splitTimerMode  1
+    timerMode       2
+    stopwatchMode   3
+
+    running         1
+    stopped         2
+
+#END
+var frame;
+var posit;
+var ctr := 0;
+
+var state;
+var posn;
+var n,x,y;
+var degrees;
+
+var hourTens :=0, hourOnes;
+var minTens :=0, minOnes;
+var secTens :=0, secOnes;
+var hour, min, sec;
+var saveHour, saveMin, saveSec;
+
+var timerStatus := stopped;
+var timerFunction := timerMode;
+var timeSpan := 1000;
+var animationSpan := 1;
+
+var smartGauge1Counter := 0;
+var formNumber := 0;
+var lineNumber :=0;
+
+var indexer :=0;
+
+func main()
+//  var hstrings ; // Handle to access uSD strings, uncomment if required
+//  var hFontx ;   // Handle to access uSD fonts, uncomment if required and change n to font number
+//  Uncomment the following if uSD images, fonts or strings used.
+
+    putstr("Mounting...\n");
+    if (!(file_Mount()))
+        while(!(file_Mount()))
+            putstr("Drive not mounted...");
+            pause(200);
+            gfx_Cls();
+            pause(200);
+        wend
+    endif
+//    gfx_TransparentColour(0x0020);    // uncomment if transparency required
+//    gfx_Transparency(ON);             // uncomment if transparency required
+
+//  hFontn := file_LoadImageControl("6_STOP~1.dan", "6_STOP~1.gcn", 1); // Open handle to access uSD fonts, uncomment if required and change n to font number dropping a and c if > 9
+//  hstrings := file_Open("6_STOP~1.txf", 'r') ; // Open handle to access uSD strings, uncomment if required
+    hndl := file_LoadImageControl("5_StopWa.dat", "5_StopWa.gci", 1);
+
+
+    gfx_Set(SCREEN_MODE,LANDSCAPE) ;
+
+    touch_Set(TOUCH_ENABLE);
+
+    form_selection (1);
+
+    // initializing function for system timer
+    sys_SetTimerEvent(TIMER7, timerEventFunction);
+    sys_SetTimerEvent(TIMER6, animationFunction);
+    timerStatus := stopped;
+
+
+    repeat
+
+    switching ();
+
+    forever
+
+endfunc
+
+
+func switching ()
+
+        state := touch_Get(TOUCH_STATUS);               // get touchscreen status
+        n := img_Touched(hndl,-1) ;
+
+        //-----------------------------------------------------------------------------------------
+        if(state == TOUCH_PRESSED)                        // if there's a press
+            x := touch_Get(TOUCH_GETX);
+            y := touch_Get(TOUCH_GETY);
+
+            if (n ==iSmartKnob1 )
+                hour := 0;
+                min := 0;
+                sec:= 0;
+                posn := 0;
+                // SmartKnob1 1.0 generated 8/11/2017 1:44:24 PM
+                img_Show(hndl,iSmartKnob1) ; // show initialy, if required
+                img_ClearAttributes(hndl, iSmartKnob1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+                degrees := XYposToDegree(x-142,      // x - CentreX
+                                         y-230) ;    // y - centreY
+                if (degrees < 90)
+                    posit := 0;
+                    img_SetWord(hndl, iUserimages1, IMAGE_INDEX, 2);
+                    img_SetWord(hndl, iUserimages2, IMAGE_INDEX, 2);
+                    form_selection (3);
+
+                else if (degrees < 210)
+                    posit := 1;
+                    img_SetWord(hndl, iUserimages1, IMAGE_INDEX, 0);
+                    img_SetWord(hndl, iUserimages2, IMAGE_INDEX, 0);
+                    form_selection (1);
+
+                else if (degrees < 270)
+                    posit :=2;
+                    img_SetWord(hndl, iUserimages1, IMAGE_INDEX, 1);
+                    img_SetWord(hndl, iUserimages2, IMAGE_INDEX, 1);
+                    form_selection (2);
+
+                endif
+
+                img_SetWord(hndl, iSmartKnob1, IMAGE_INDEX, posit);
+                img_Show(hndl,iSmartKnob1) ;
+                img_Show(hndl,iUserimages1) ;
+                img_Show(hndl,iUserimages2) ;
+                img_Show(hndl, iSmartKnob1);
+
+            //stopwatch
+            else if (n ==iUserbutton1 )
+                if (ctr == 0)
+                    // SmartKnob1 1.0 generated 10/6/2017 11:03:49 PM
+                    img_SetAttributes(hndl, iSmartKnob1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+                    img_SetWord(hndl, iUserbutton1, IMAGE_INDEX, 1); // where state is 0 for up and 1 for down, or 2 total states
+                    start();
+                    ctr := 1;
+                else if (ctr == 1)
+                    // SmartKnob1 1.0 generated 10/6/2017 11:03:49 PM
+                    img_ClearAttributes(hndl, iSmartKnob1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+                    img_SetWord(hndl, iUserbutton1, IMAGE_INDEX, 0); // where state is 0 for up and 1 for down, or 2 total states
+                    stop();
+                    ctr := 0;
+                endif
+                img_Show(hndl,iUserbutton1) ;
+            else if (n ==iUserbutton2 )
+                img_SetWord(hndl, iUserbutton2, IMAGE_INDEX, 1); // where state is 0 for up and 1 for down, or 2 total states
+                img_Show(hndl,iUserbutton2) ;
+                if(ctr == 0)
+                    reset(1);
+                endif
+            endif
+
+            if (n ==iUserbutton3 )
+                if(ctr == 0)
+                    img_SetWord(hndl, iUserbutton3, IMAGE_INDEX, 1); // where state is 0 for up and 1 for down, or 2 total states
+                    // SmartKnob1 1.0 generated 10/6/2017 11:03:49 PM
+                    img_SetAttributes(hndl, iSmartKnob1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+                    img_SetWord(hndl, iUserbutton1, IMAGE_INDEX, 1); // where state is 0 for up and 1 for down, or 2 total states
+                    start();
+                    ctr := 1;
+                else
+                    // SmartKnob1 1.0 generated 10/6/2017 11:03:49 PM
+                    img_ClearAttributes(hndl, iSmartKnob1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+                    img_SetWord(hndl, iUserbutton1, IMAGE_INDEX, 1); // where state is 0 for up and 1 for down, or 2 total states
+                    img_SetWord(hndl, iUserbutton3, IMAGE_INDEX, 0); // where state is 0 for up and 1 for down, or 2 total states
+                    stop();
+                    ctr := 0;
+                endif
+                img_Show(hndl,iUserbutton3) ;
+            else if (n ==iUserbutton4)
+                img_SetWord(hndl, iUserbutton4, IMAGE_INDEX, 1); // where state is 0 for up and 1 for down, or 2 total states
+                img_Show(hndl,iUserbutton4) ;
+                if(ctr == 0)
+                    reset(2);
+                endif
+            endif
+
+            if (n == iUserbutton5 )
+                img_SetWord(hndl, iUserbutton5, IMAGE_INDEX, 1); // where state is 0 for up and 1 for down, or 2 total states
+                img_Show(hndl,iUserbutton5) ;
+                if(ctr == 0)
+                    reset(3) ;
+                endif
+            else if (n ==iUserbutton6 )
+                if(ctr == 0)
+                    img_SetWord(hndl, iUserbutton6, IMAGE_INDEX, 1); // where state is 0 for up and 1 for down, or 2 total states
+                    // SmartKnob1 1.0 generated 10/6/2017 11:03:49 PM
+                    img_SetAttributes(hndl, iSmartKnob1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+                    img_SetWord(hndl, iUserbutton1, IMAGE_INDEX, 1); // where state is 0 for up and 1 for down, or 2 total states
+                    start();
+                    ctr := 1;
+                else
+                    // SmartKnob1 1.0 generated 10/6/2017 11:03:49 PM
+                    img_ClearAttributes(hndl, iSmartKnob1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+                    img_SetWord(hndl, iUserbutton1, IMAGE_INDEX, 1); // where state is 0 for up and 1 for down, or 2 total states
+                    img_SetWord(hndl, iUserbutton6, IMAGE_INDEX, 0); // where state is 0 for up and 1 for down, or 2 total states
+                    stop();
+                    ctr := 0;
+                endif
+                img_Show(hndl,iUserbutton6) ;
+            else if (n ==iUserbutton7 )
+                img_SetWord(hndl, iUserbutton7, IMAGE_INDEX, 1); // where state is 0 for up and 1 for down, or 2 total states
+                img_Show(hndl,iUserbutton7) ;
+                if(ctr == 1)
+                    splitTimer();
+                endif
+            endif
+        endif
+
+        //-----------------------------------------------------------------------------------------
+        if(state == TOUCH_RELEASED)                      // if there's a release            \
+
+            if (n ==iUserbutton2 )
+                img_SetWord(hndl, iUserbutton2, IMAGE_INDEX, 0); // where state is 0 for up and 1 for down, or 2 total states
+                img_Show(hndl,iUserbutton2) ;
+            else if (n ==iUserbutton4 )
+                img_SetWord(hndl, iUserbutton4, IMAGE_INDEX, 0); // where state is 0 for up and 1 for down, or 2 total states
+                img_Show(hndl,iUserbutton4) ;
+            else if (n ==iUserbutton5 )
+                img_SetWord(hndl, iUserbutton5, IMAGE_INDEX, 0); // where state is 0 for up and 1 for down, or 2 total states
+                img_Show(hndl,iUserbutton5) ;
+            else if (n ==iUserbutton7 )
+                img_SetWord(hndl, iUserbutton7, IMAGE_INDEX, 0); // where state is 0 for up and 1 for down, or 2 total states
+                img_Show(hndl,iUserbutton7) ;
+            endif
+
+        endif
+
+        //-----------------------------------------------------------------------------------------
+        if(state == TOUCH_MOVING)                       // if it's moving
+            x := touch_Get(TOUCH_GETX);
+            y := touch_Get(TOUCH_GETY);
+
+            if (n ==iSlider1 )  // TIMER SECONDS
+                img_Show(hndl,iSlider1) ; // show initialy, if required
+                img_ClearAttributes(hndl, iSlider1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+                posn := x - 340 ;                        // x - left - 8
+                if (posn < 0)
+                    posn := 0 ;
+                else if (posn > 433)                    // width - 17)
+                    posn := 59 ;                       // maxvalue-minvalue
+                else
+                    posn := 59 * posn / 433 ;    // max-min - (max-min) * posn / (width-17)
+                endif
+                img_SetWord(hndl, iSlider1, IMAGE_INDEX, posn);
+                img_Show(hndl, iSlider1);
+                saveSec := posn;
+                sec := saveSec;
+                secTens := sec/10;
+                secOnes := sec%10;
+
+                 if(formNumber == 2)
+                     setTimerValues(2);
+                 else if(formNumber == 3)
+                     setTimerValues(3);
+                 endif
+
+             else if  (n ==iSlider2 )  //TIMER MINUTES
+                 img_Show(hndl,iSlider2) ; // show initialy, if required
+                 img_ClearAttributes(hndl, iSlider2, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+                 posn := x - 340 ;                        // x - left - 8
+                 if (posn < 0)
+                     posn := 0 ;
+                 else if (posn > 433)                    // width - 17)
+                     posn := 59 ;                       // maxvalue-minvalue
+                 else
+                     posn := 59 * posn / 433 ;    // max-min - (max-min) * posn / (width-17)
+                 endif
+                 img_SetWord(hndl, iSlider2, IMAGE_INDEX, posn);
+                 img_Show(hndl, iSlider2);
+                 saveMin := posn;
+                 min := saveMin;
+                 minTens := min/10;
+                 minOnes := min%10;
+
+                 if(formNumber == 2)
+                     setTimerValues(2);
+                 else if(formNumber == 3)
+                     setTimerValues(3);
+                 endif
+
+             else if  (n ==iSlider3 ) //TIMER HOURS
+                 img_Show(hndl,iSlider3) ; // show initialy, if required
+                 img_ClearAttributes(hndl, iSlider3, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+                 posn := x - 340 ;                        // x - left - 8
+                 if (posn < 0)
+                     posn := 0 ;
+                 else if (posn > 433)                    // width - 17)
+                     posn := 59 ;                       // maxvalue-minvalue
+                 else
+                     posn := 59 * posn / 433 ;    // max-min - (max-min) * posn / (width-17)
+                 endif
+                 img_SetWord(hndl, iSlider3, IMAGE_INDEX, posn);
+                 img_Show(hndl, iSlider3);
+                 saveHour := posn;
+                 hour := saveHour;
+                 hourTens := hour/10;
+                 hourOnes := hour%10;
+
+                 if(formNumber == 2)
+                     setTimerValues(2);
+                 else if(formNumber == 3)
+                     setTimerValues(3);
+                 endif
+
+             endif
+
+        endif
+endfunc
+
+func timerEventFunction()
+    // key is to update only the image that need updating
+    if(timerStatus ==  running) sys_SetTimer(TIMER7, timeSpan);
+    if(formNumber == 1)
+        updateTimerUPcount();
+    else
+        updateTimerDownCount();
+    endif
+endfunc
+
+func start()
+     timerStatus := running;
+     sys_SetTimer(TIMER7, timeSpan);
+     sys_SetTimer(TIMER6, animationSpan);
+endfunc
+
+func stop()
+    timerStatus := stopped;
+endfunc
+
+func splitTimer()
+    txt_Opacity(OPAQUE);
+    txt_MoveCursor(lineNumber + 3, 40);
+    print([DEC2Z] hour);
+    txt_MoveCursor(lineNumber + 3, 43);
+    print([DEC2Z] min);
+    txt_MoveCursor(lineNumber + 3, 46);
+    print([DEC2Z] sec);
+    lineNumber++;
+    if(lineNumber == 10)    lineNumber := 0;
+endfunc
+
+func animationFunction()
+    smartGauge1Counter++;
+    switch(formNumber)
+            case 1:
+            if(smartGauge1Counter == 60)
+                smartGauge1Counter := 0;
+            endif
+            // SmartGauge1 1.0 generated 10/6/2017 10:52:03 PM
+            img_SetWord(hndl, iSmartGauge1, IMAGE_INDEX, smartGauge1Counter) ; // where frame is 0 to 59
+            img_Show(hndl,iSmartGauge1) ;
+            break;
+
+        case 2:
+            if(smartGauge1Counter == 62)
+                smartGauge1Counter := 0;
+            endif
+            // SmartGauge2 1.0 generated 10/7/2017 12:17:12 PM
+            img_SetWord(hndl, iSmartGauge2, IMAGE_INDEX, smartGauge1Counter) ; // where frame is 0 to 61
+            img_Show(hndl,iSmartGauge2) ;
+            break;
+
+        case 3:
+            if(smartGauge1Counter == 62)
+                smartGauge1Counter := 0;
+            endif
+            // SmartGauge3 1.0 generated 10/7/2017 12:17:39 PM
+            img_SetWord(hndl, iSmartGauge3, IMAGE_INDEX, smartGauge1Counter) ; // where frame is 0 to 61
+            img_Show(hndl,iSmartGauge3) ;
+            break;
+
+        default:
+            break;
+    endswitch
+
+    if(timerStatus ==  running) sys_SetTimer(TIMER6, animationSpan);
+endfunc
+
+func updateTimerUPcount()
+
+    secOnes++;
+    // Userimages8 1.0 generated 10/5/2017 10:50:49 PM
+    img_SetWord(hndl, iUserimages8, IMAGE_INDEX, secOnes) ; // where frame is 0 to 9
+    img_Show(hndl,iUserimages8) ;
+
+    if(secOnes == 10)
+        secOnes := 0;
+        secTens++;
+
+        // Userimages8 1.0 generated 10/5/2017 10:50:49 PM
+        img_SetWord(hndl, iUserimages8, IMAGE_INDEX, secOnes) ; // where frame is 0 to 9
+        img_Show(hndl,iUserimages8) ;
+        // Userimages7 1.0 generated 10/5/2017 10:51:04 PM
+        img_SetWord(hndl, iUserimages7, IMAGE_INDEX, secTens) ; // where frame is 0 to 9
+        img_Show(hndl,iUserimages7) ;
+
+    endif
+
+    if(secTens == 6)
+        secTens := 0;
+        minOnes++;
+
+
+        // Userimages7 1.0 generated 10/5/2017 10:56:17 PM
+        img_SetWord(hndl, iUserimages7, IMAGE_INDEX, secTens) ; // where frame is 0 to 9
+        img_Show(hndl,iUserimages7) ;
+
+        // Userimages6 1.0 generated 10/5/2017 10:56:19 PM
+        img_SetWord(hndl, iUserimages6, IMAGE_INDEX, minOnes) ; // where frame is 0 to 9
+        img_Show(hndl,iUserimages6) ;
+
+        img_Show(hndl,iUserimages5) ;
+
+    endif
+
+    if(minOnes == 10)
+        minOnes := 0;
+        minTens++;
+
+        // Userimages6 1.0 generated 10/5/2017 10:54:35 PM
+        img_SetWord(hndl, iUserimages6, IMAGE_INDEX, minOnes) ; // where frame is 0 to 9
+        img_Show(hndl,iUserimages6) ;
+        // Userimages5 1.0 generated 10/5/2017 10:54:37 PM
+        img_SetWord(hndl, iUserimages5, IMAGE_INDEX, minTens) ; // where frame is 0 to 9
+        img_Show(hndl,iUserimages5) ;
+    endif
+
+    if(minTens == 6)
+        minTens := 0;
+        hourOnes++;
+
+        // Userimages5 1.0 generated 10/5/2017 10:55:02 PM
+        img_SetWord(hndl, iUserimages5, IMAGE_INDEX, minTens) ; // where frame is 0 to 9
+        img_Show(hndl,iUserimages5) ;
+        // Userimages4 1.0 generated 10/5/2017 10:55:04 PM
+        img_SetWord(hndl, iUserimages4, IMAGE_INDEX, hourOnes) ; // where frame is 0 to 9
+        img_Show(hndl,iUserimages4) ;
+    endif
+
+    if(hourOnes == 10)
+        hourOnes := 0;
+        hourTens++;
+
+
+        // Userimages4 1.0 generated 10/5/2017 10:55:28 PM
+        img_SetWord(hndl, iUserimages4, IMAGE_INDEX, hourOnes) ; // where frame is 0 to 9
+        img_Show(hndl,iUserimages4) ;
+        // Userimages3 1.0 generated 10/5/2017 10:55:30 PM
+        img_SetWord(hndl, iUserimages3, IMAGE_INDEX, hourTens) ; // where frame is 0 to 9
+        img_Show(hndl,iUserimages3) ;
+
+    endif
+
+    if(hourTens == 9)
+        timerStatus := stopped;     // this will avoid exceeding 99:59:59
+    endif
+
+endfunc
+
+func updateTimerDownCount()
+    if(sec > 0)
+        sec--;
+    else if(min > 0)
+        sec := 59;
+        min--;
+    else if(hour > 0)
+        sec := 59;
+        min := 59;
+        hour--;
+    else
+        timerStatus := stopped;
+        ctr := 0;
+        alarm_sound();
+        if(formNumber == 2)
+            img_SetWord(hndl, iUserbutton3, IMAGE_INDEX, 0); // where state is 0 for up and 1 for down, or 2 total states
+            img_Show(hndl,iUserbutton3) ;
+            img_SetWord(hndl, iSmartGauge2, IMAGE_INDEX, 0) ; // where frame is 0 to 61
+            img_Show(hndl,iSmartGauge2) ;
+        else if(formNumber == 3)
+            img_SetWord(hndl, iUserbutton6, IMAGE_INDEX, 0); // where state is 0 for up and 1 for down, or 2 total states
+            img_Show(hndl,iUserbutton6) ;
+            img_SetWord(hndl, iSmartGauge3, IMAGE_INDEX, 0) ; // where frame is 0 to 61
+            img_Show(hndl,iSmartGauge3) ;
+        endif
+
+    endif
+
+    hourTens := hour/10; hourOnes := hour%10;
+    minTens := min/10; minOnes := min%10;
+    secTens := sec/10; secOnes := sec%10;
+
+  switch(formNumber)
+            case 2:
+
+                // Userimages8 1.0 generated 10/5/2017 10:50:49 PM
+                img_SetWord(hndl, iUserimages14, IMAGE_INDEX, secOnes) ; // where frame is 0 to 9
+                img_Show(hndl,iUserimages14) ;
+                // Userimages7 1.0 generated 10/5/2017 10:51:04 PM
+                img_SetWord(hndl, iUserimages13, IMAGE_INDEX, secTens) ; // where frame is 0 to 9
+                img_Show(hndl,iUserimages13) ;
+                // Userimages6 1.0 generated 10/5/2017 10:56:19 PM
+                img_SetWord(hndl, iUserimages12, IMAGE_INDEX, minOnes) ; // where frame is 0 to 9
+                img_Show(hndl,iUserimages12) ;
+                // Userimages5 1.0 generated 10/5/2017 10:54:37 PM
+                img_SetWord(hndl, iUserimages11, IMAGE_INDEX, minTens) ; // where frame is 0 to 9
+                img_Show(hndl,iUserimages11) ;
+                // Userimages4 1.0 generated 10/5/2017 10:55:04 PM
+                img_SetWord(hndl, iUserimages10, IMAGE_INDEX, hourOnes) ; // where frame is 0 to 9
+                img_Show(hndl,iUserimages10);
+                // Userimages3 1.0 generated 10/5/2017 10:55:30 PM
+                img_SetWord(hndl, iUserimages9, IMAGE_INDEX, hourTens) ; // where frame is 0 to 9
+                img_Show(hndl,iUserimages9) ;
+
+                break;
+            case 3:
+                // Userimages8 1.0 generated 10/5/2017 10:50:49 PM
+                img_SetWord(hndl, iUserimages15, IMAGE_INDEX, secOnes) ; // where frame is 0 to 9
+                img_Show(hndl,iUserimages15) ;
+                // Userimages7 1.0 generated 10/5/2017 10:51:04 PM
+                img_SetWord(hndl, iUserimages16, IMAGE_INDEX, secTens) ; // where frame is 0 to 9
+                img_Show(hndl,iUserimages16) ;
+                // Userimages6 1.0 generated 10/5/2017 10:56:19 PM
+                img_SetWord(hndl, iUserimages17, IMAGE_INDEX, minOnes) ; // where frame is 0 to 9
+                img_Show(hndl,iUserimages17) ;
+                // Userimages5 1.0 generated 10/5/2017 10:54:37 PM
+                img_SetWord(hndl, iUserimages18, IMAGE_INDEX, minTens) ; // where frame is 0 to 9
+                img_Show(hndl,iUserimages18) ;
+                // Userimages4 1.0 generated 10/5/2017 10:55:04 PM
+                img_SetWord(hndl, iUserimages19, IMAGE_INDEX, hourOnes) ; // where frame is 0 to 9
+                img_Show(hndl,iUserimages19);
+                // Userimages3 1.0 generated 10/5/2017 10:55:30 PM
+                img_SetWord(hndl, iUserimages20, IMAGE_INDEX, hourTens) ; // where frame is 0 to 9
+                img_Show(hndl,iUserimages20) ;
+
+                break;
+            default:
+                break;
+        endswitch
+endfunc
+
+
+func reset(var form)
+    timerStatus := stopped;
+    smartGauge1Counter := 0;
+    switch(form)
+        case 1:
+            hourTens :=0; hourOnes :=0;
+            minTens :=0; minOnes :=0;
+            secTens :=0; secOnes :=0;
+
+            // Userimages8 1.0 generated 10/5/2017 10:50:49 PM
+            img_SetWord(hndl, iUserimages8, IMAGE_INDEX, secOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages8) ;
+            // Userimages7 1.0 generated 10/5/2017 10:51:04 PM
+            img_SetWord(hndl, iUserimages7, IMAGE_INDEX, secTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages7) ;
+            // Userimages6 1.0 generated 10/5/2017 10:56:19 PM
+            img_SetWord(hndl, iUserimages6, IMAGE_INDEX, minOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages6) ;
+            // Userimages5 1.0 generated 10/5/2017 10:54:37 PM
+            img_SetWord(hndl, iUserimages5, IMAGE_INDEX, minTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages5) ;
+            // Userimages4 1.0 generated 10/5/2017 10:55:04 PM
+            img_SetWord(hndl, iUserimages4, IMAGE_INDEX, hourOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages4);
+            // Userimages3 1.0 generated 10/5/2017 10:55:30 PM
+            img_SetWord(hndl, iUserimages3, IMAGE_INDEX, hourTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages3) ;
+            // SmartGauge1 1.0 generated 10/7/2017 1:12:44 PM
+            img_SetWord(hndl, iSmartGauge1, IMAGE_INDEX, 0) ; // where frame is 0 to 59
+            img_Show(hndl,iSmartGauge1) ;
+
+
+            break;
+        case 2:
+            hourTens := saveHour/10; hourOnes := saveHour%10;
+            minTens := saveMin/10; minOnes := saveMin%10;
+            secTens := saveSec/10; secOnes := saveSec%10;
+
+            hour:= saveHour;
+            min:= saveMin;
+            sec:= saveSec;
+
+            // Userimages8 1.0 generated 10/5/2017 10:50:49 PM
+            img_SetWord(hndl, iUserimages14, IMAGE_INDEX, secOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages14) ;
+            // Userimages7 1.0 generated 10/5/2017 10:51:04 PM
+            img_SetWord(hndl, iUserimages13, IMAGE_INDEX, secTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages13) ;
+            // Userimages6 1.0 generated 10/5/2017 10:56:19 PM
+            img_SetWord(hndl, iUserimages12, IMAGE_INDEX, minOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages12) ;
+            // Userimages5 1.0 generated 10/5/2017 10:54:37 PM
+            img_SetWord(hndl, iUserimages11, IMAGE_INDEX, minTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages11) ;
+            // Userimages4 1.0 generated 10/5/2017 10:55:04 PM
+            img_SetWord(hndl, iUserimages10, IMAGE_INDEX, hourOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages10);
+            // Userimages3 1.0 generated 10/5/2017 10:55:30 PM
+            img_SetWord(hndl, iUserimages9, IMAGE_INDEX, hourTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages9) ;
+            // SmartGauge2 1.0 generated 10/7/2017 1:12:14 PM
+            img_SetWord(hndl, iSmartGauge2, IMAGE_INDEX, 0) ; // where frame is 0 to 61
+            img_Show(hndl,iSmartGauge2) ;
+
+            break;
+        case 3:
+            hourTens := saveHour/10; hourOnes := saveHour%10;
+            minTens := saveMin/10; minOnes := saveMin%10;
+            secTens := saveSec/10; secOnes := saveSec%10;
+
+            hour:= saveHour;
+            min:= saveMin;
+            sec:= saveSec;
+
+            // Userimages8 1.0 generated 10/5/2017 10:50:49 PM
+            img_SetWord(hndl, iUserimages15, IMAGE_INDEX, secOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages15) ;
+            // Userimages7 1.0 generated 10/5/2017 10:51:04 PM
+            img_SetWord(hndl, iUserimages16, IMAGE_INDEX, secTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages16) ;
+            // Userimages6 1.0 generated 10/5/2017 10:56:19 PM
+            img_SetWord(hndl, iUserimages17, IMAGE_INDEX, minOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages17) ;
+            // Userimages5 1.0 generated 10/5/2017 10:54:37 PM
+            img_SetWord(hndl, iUserimages18, IMAGE_INDEX, minTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages18) ;
+            // Userimages4 1.0 generated 10/5/2017 10:55:04 PM
+            img_SetWord(hndl, iUserimages19, IMAGE_INDEX, hourOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages19);
+            // Userimages3 1.0 generated 10/5/2017 10:55:30 PM
+            img_SetWord(hndl, iUserimages20, IMAGE_INDEX, hourTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages20) ;
+            // SmartGauge3 1.0 generated 10/7/2017 1:11:58 PM
+            img_SetWord(hndl, iSmartGauge3, IMAGE_INDEX, 0) ; // where frame is 0 to 61
+            img_Show(hndl,iSmartGauge3) ;
+
+            txt_Opacity(OPAQUE);
+            for(lineNumber :=0; lineNumber < 10; lineNumber++)
+                txt_MoveCursor(lineNumber + 3, 40);
+                print([DEC2Z] 0);
+                txt_MoveCursor(lineNumber + 3, 43);
+                print([DEC2Z] 0);
+                txt_MoveCursor(lineNumber + 3, 46);
+                print([DEC2Z] 0);
+            next
+            lineNumber := 0;
+            break;
+        default:
+            break;
+    endswitch
+endfunc
+
+
+func setTimerValues(var formNumb)
+    hourTens := saveHour/10; hourOnes := saveHour%10;
+    minTens := saveMin/10; minOnes := saveMin%10;
+    secTens := saveSec/10; secOnes := saveSec%10;
+    switch(formNumb)
+        case 2:
+            // Userimages8 1.0 generated 10/5/2017 10:50:49 PM
+            img_SetWord(hndl, iUserimages14, IMAGE_INDEX, secOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages14) ;
+            // Userimages7 1.0 generated 10/5/2017 10:51:04 PM
+            img_SetWord(hndl, iUserimages13, IMAGE_INDEX, secTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages13) ;
+            // Userimages6 1.0 generated 10/5/2017 10:56:19 PM
+            img_SetWord(hndl, iUserimages12, IMAGE_INDEX, minOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages12) ;
+            // Userimages5 1.0 generated 10/5/2017 10:54:37 PM
+            img_SetWord(hndl, iUserimages11, IMAGE_INDEX, minTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages11) ;
+            // Userimages4 1.0 generated 10/5/2017 10:55:04 PM
+            img_SetWord(hndl, iUserimages10, IMAGE_INDEX, hourOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages10);
+            // Userimages3 1.0 generated 10/5/2017 10:55:30 PM
+            img_SetWord(hndl, iUserimages9, IMAGE_INDEX, hourTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages9) ;
+            break;
+        case 3:
+            // Userimages8 1.0 generated 10/5/2017 10:50:49 PM
+            img_SetWord(hndl, iUserimages15, IMAGE_INDEX, secOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages15) ;
+            // Userimages7 1.0 generated 10/5/2017 10:51:04 PM
+            img_SetWord(hndl, iUserimages16, IMAGE_INDEX, secTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages16) ;
+            // Userimages6 1.0 generated 10/5/2017 10:56:19 PM
+            img_SetWord(hndl, iUserimages17, IMAGE_INDEX, minOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages17) ;
+            // Userimages5 1.0 generated 10/5/2017 10:54:37 PM
+            img_SetWord(hndl, iUserimages18, IMAGE_INDEX, minTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages18) ;
+            // Userimages4 1.0 generated 10/5/2017 10:55:04 PM
+            img_SetWord(hndl, iUserimages19, IMAGE_INDEX, hourOnes) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages19);
+            // Userimages3 1.0 generated 10/5/2017 10:55:30 PM
+            img_SetWord(hndl, iUserimages20, IMAGE_INDEX, hourTens) ; // where frame is 0 to 9
+            img_Show(hndl,iUserimages20) ;
+            break;
+        default:
+            break;
+    endswitch
+
+endfunc
+
+func alarm_sound()
+
+    if(file_Exists("ALARM.wav"))
+        snd_Volume(100);
+        file_PlayWAV("ALARM.wav");
+        while(snd_Playing());
+    else
+        putstr("ALARM.wav not found\n");
+    endif
+
+endfunc
+
+
+
+func form_selection (var form)
+     timerStatus := stopped;
+     smartGauge1Counter := 0;
+     hour := 0;
+     min := 0;
+     sec := 0;
+     switch (form)
+
+        case (1) :
+
+           formNumber := 1;
+           frame := 0;
+           img_SetWord(hndl, iSmartKnob1, IMAGE_INDEX, 1);
+           img_SetWord(hndl, iUserimages2, IMAGE_INDEX, frame) ; // where frame is 0 to 2
+           img_SetWord(hndl, iUserimages1, IMAGE_INDEX, frame) ; // where frame is 0 to 2
+           img_SetWord(hndl, iUserbutton1, IMAGE_INDEX, frame); // where state is 0 for up and 1 for down, or 2 total states
+           img_SetWord(hndl, iUserbutton2, IMAGE_INDEX, frame); // where state is 0 for up and 1 for down, or 2 total states
+           img_SetWord(hndl, iUserimages3, IMAGE_INDEX, frame) ; // where frame is 0 to 9
+           img_SetWord(hndl, iUserimages4, IMAGE_INDEX, frame) ; // where frame is 0 to 9
+           img_SetWord(hndl, iUserimages5, IMAGE_INDEX, frame) ; // where frame is 0 to 9
+           img_SetWord(hndl, iUserimages6, IMAGE_INDEX, frame) ; // where frame is 0 to 9
+           img_SetWord(hndl, iUserimages7, IMAGE_INDEX, frame) ; // where frame is 0 to 9
+           img_SetWord(hndl, iUserimages8, IMAGE_INDEX, frame) ; // where frame is 0 to 9
+           img_SetWord(hndl, iSmartGauge1, IMAGE_INDEX, frame) ; // where frame is 0 to 59
+
+           img_Show(hndl,iForm1) ;
+           img_Show(hndl,iUserimages1) ;
+           img_Show(hndl,iUserimages2) ;
+           img_Show(hndl,iSmartKnob1) ;
+           img_Show(hndl, iUserbutton1);
+           img_Show(hndl,iUserbutton2) ;
+           img_Show(hndl,iUserimages4) ;
+           img_Show(hndl,iUserimages3) ;
+           img_Show(hndl,iUserimages5) ;
+           img_Show(hndl,iUserimages6) ;
+           img_Show(hndl,iUserimages7) ;
+           img_Show(hndl,iUserimages8) ;
+           img_Show(hndl,iStatictext1) ;
+           img_Show(hndl,iStatictext2) ;
+           img_Show(hndl,iSmartGauge1) ;
+           img_ClearAttributes(hndl, iSmartKnob1, I_TOUCH_DISABLE);
+           img_ClearAttributes(hndl, iUserbutton1, I_TOUCH_DISABLE);
+           img_ClearAttributes(hndl, iUserbutton2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iForm1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages3, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages4, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages5, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages6, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages7, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages8, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iSmartGauge1, I_TOUCH_DISABLE);
+
+
+           img_SetAttributes(hndl, iSlider1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iSlider2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iSlider3, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserbutton3, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserbutton4, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext3, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext4, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages9, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages10, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages11, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages12, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages13, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages14, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iForm2, I_TOUCH_DISABLE);
+
+           img_SetAttributes(hndl, iUserbutton6, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserbutton7, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext5, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext6, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages17, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages18, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages19, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages20, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iForm2, I_TOUCH_DISABLE);
+           break;
+
+        case (2) :
+            saveHour := 0;
+            saveMin := 0;
+            saveSec := 0;
+            formNumber := 2;
+            frame := 0;
+            img_SetWord(hndl, iSmartKnob1, IMAGE_INDEX, posit);
+            img_SetWord(hndl, iSlider1, IMAGE_INDEX, 0);
+            img_SetWord(hndl, iSlider2, IMAGE_INDEX, 0);
+            img_SetWord(hndl, iSlider3, IMAGE_INDEX, 0);
+
+            img_SetWord(hndl, iUserimages9, IMAGE_INDEX, frame);
+            img_SetWord(hndl, iUserimages10, IMAGE_INDEX, frame);
+            img_SetWord(hndl, iUserimages11, IMAGE_INDEX, frame);
+            img_SetWord(hndl, iUserimages12, IMAGE_INDEX, frame);
+            img_SetWord(hndl, iUserimages13, IMAGE_INDEX, frame);
+            img_SetWord(hndl, iUserimages14, IMAGE_INDEX, frame);
+            img_SetWord(hndl, iUserbutton3, IMAGE_INDEX, frame);
+            img_SetWord(hndl, iUserbutton4, IMAGE_INDEX, frame);
+            img_SetWord(hndl, iSmartGauge2, IMAGE_INDEX, frame);
+
+            img_Show(hndl,iForm2) ;
+            img_Show(hndl,iSlider1) ;
+            img_Show(hndl,iSlider2) ;
+            img_Show(hndl,iSlider3) ;
+            img_Show(hndl,iUserimages9) ;
+            img_Show(hndl,iUserimages10) ;
+            img_Show(hndl,iUserimages11) ;
+            img_Show(hndl,iUserimages12) ;
+            img_Show(hndl,iUserimages13) ;
+            img_Show(hndl,iUserimages14) ;
+            img_Show(hndl,iStatictext3) ;
+            img_Show(hndl,iStatictext4) ;
+            img_Show(hndl, iUserbutton3);
+            img_Show(hndl, iUserbutton4);
+            img_Show(hndl, iSmartGauge2);
+            img_Show(hndl,iSmartKnob1) ;
+
+            img_ClearAttributes(hndl, iSlider1, I_TOUCH_DISABLE);
+            img_ClearAttributes(hndl, iSlider2, I_TOUCH_DISABLE);
+            img_ClearAttributes(hndl, iSlider3, I_TOUCH_DISABLE);
+            img_ClearAttributes(hndl, iSmartKnob1, I_TOUCH_DISABLE);
+            img_ClearAttributes(hndl, iUserbutton3, I_TOUCH_DISABLE);
+            img_ClearAttributes(hndl, iUserbutton4, I_TOUCH_DISABLE);
+            img_SetAttributes(hndl, iStatictext3, I_TOUCH_DISABLE);
+            img_SetAttributes(hndl, iStatictext4, I_TOUCH_DISABLE);
+            img_SetAttributes(hndl, iUserimages9, I_TOUCH_DISABLE);
+            img_SetAttributes(hndl, iUserimages10, I_TOUCH_DISABLE);
+            img_SetAttributes(hndl, iUserimages11, I_TOUCH_DISABLE);
+            img_SetAttributes(hndl, iUserimages12, I_TOUCH_DISABLE);
+            img_SetAttributes(hndl, iUserimages13, I_TOUCH_DISABLE);
+            img_SetAttributes(hndl, iUserimages14, I_TOUCH_DISABLE);
+            img_SetAttributes(hndl, iForm2, I_TOUCH_DISABLE);
+
+           img_SetAttributes(hndl, iUserbutton1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserbutton2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iForm1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages3, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages4, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages5, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages6, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages7, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages8, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iSmartGauge1, I_TOUCH_DISABLE);
+
+           img_SetAttributes(hndl, iUserbutton5, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserbutton6, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserbutton7, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext5, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext6, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages17, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages18, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages19, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages20, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iForm2, I_TOUCH_DISABLE);
+
+           break;
+
+        case (3) :
+            saveHour := 0;
+            saveMin := 0;
+            saveSec := 0;
+            formNumber := 3;
+            frame := 0;
+
+            img_SetWord(hndl, iUserimages15, IMAGE_INDEX, frame) ; // where frame is 0 to 9
+            img_SetWord(hndl, iUserimages16, IMAGE_INDEX, frame) ; // where frame is 0 to 9
+            img_SetWord(hndl, iUserimages17, IMAGE_INDEX, frame) ; // where frame is 0 to 9
+            img_SetWord(hndl, iUserimages18, IMAGE_INDEX, frame) ; // where frame is 0 to 9
+            img_SetWord(hndl, iUserimages19, IMAGE_INDEX, frame) ; // where frame is 0 to 9
+            img_SetWord(hndl, iUserimages20, IMAGE_INDEX, frame) ; // where frame is 0 to 9
+            img_SetWord(hndl, iSmartGauge3, IMAGE_INDEX, frame) ; // where frame is 0 to 61
+            img_SetWord(hndl, iUserbutton5, IMAGE_INDEX, frame); // where state is 0 for up and 1 for down, or 2 total states
+            img_SetWord(hndl, iUserbutton6, IMAGE_INDEX, frame); // where state is 0 for up and 1 for down, or 2 total states
+            img_SetWord(hndl, iUserbutton7, IMAGE_INDEX, frame); // where state is 0 for up and 1 for down, or 2 total states
+            img_SetWord(hndl, iSlider1, IMAGE_INDEX, 0);
+            img_SetWord(hndl, iSlider2, IMAGE_INDEX, 0);
+            img_SetWord(hndl, iSlider3, IMAGE_INDEX, 0);
+
+            img_Show(hndl,iForm3) ;
+
+            txt_FGcolour(WHITE);             // 0  text foreground colour
+            txt_Opacity(TRANSPARENT);
+            txt_Set(FONT_ID, FONT_4);
+            for(lineNumber :=0; lineNumber < 10; lineNumber++)
+                txt_MoveCursor(lineNumber + 3, 25);
+                print("\rSPLIT TIME ", lineNumber, " :   :  :  ");
+            next
+
+            txt_Opacity(OPAQUE);
+            for(lineNumber :=0; lineNumber < 10; lineNumber++)
+                txt_MoveCursor(lineNumber + 3, 40);
+                print([DEC2Z] 0);
+                txt_MoveCursor(lineNumber + 3, 43);
+                print([DEC2Z] 0);
+                txt_MoveCursor(lineNumber + 3, 46);
+                print([DEC2Z] 0);
+            next
+            lineNumber := 0;
+
+            img_Show(hndl,iStatictext5) ;
+            img_Show(hndl,iStatictext6) ;
+
+            img_Show(hndl,iSmartGauge3) ;
+
+            img_Show(hndl,iUserimages15) ;
+            img_Show(hndl,iUserimages16) ;
+            img_Show(hndl,iUserimages17) ;
+            img_Show(hndl,iUserimages18) ;
+            img_Show(hndl,iUserimages19) ;
+            img_Show(hndl,iUserimages20) ;
+
+            img_Show(hndl,iUserbutton5) ;
+            img_Show(hndl,iUserbutton6) ;
+            img_Show(hndl,iUserbutton7) ;
+            img_Show(hndl,iSlider1) ;
+            img_Show(hndl,iSlider2) ;
+            img_Show(hndl,iSlider3) ;
+
+           img_ClearAttributes(hndl, iSmartKnob1, I_TOUCH_DISABLE);
+           img_ClearAttributes(hndl, iUserbutton5, I_TOUCH_DISABLE);
+           img_ClearAttributes(hndl, iUserbutton6, I_TOUCH_DISABLE);
+           img_ClearAttributes(hndl, iUserbutton7, I_TOUCH_DISABLE);
+
+           img_SetAttributes(hndl, iStatictext5, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext6, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages15, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages16, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages17, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages18, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages19, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages20, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iForm3, I_TOUCH_DISABLE);
+
+           img_SetAttributes(hndl, iUserbutton1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserbutton2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iForm1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages3, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages4, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages5, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages6, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages7, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages8, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iSmartGauge1, I_TOUCH_DISABLE);
+
+
+           img_ClearAttributes(hndl, iSlider1, I_TOUCH_DISABLE);
+           img_ClearAttributes(hndl, iSlider2, I_TOUCH_DISABLE);
+           img_ClearAttributes(hndl, iSlider3, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserbutton3, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserbutton4, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext3, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iStatictext4, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages9, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages10, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages11, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages12, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages13, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages14, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages1, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iUserimages2, I_TOUCH_DISABLE);
+           img_SetAttributes(hndl, iForm2, I_TOUCH_DISABLE);
+           break;
+
+    endswitch
+
+endfunc

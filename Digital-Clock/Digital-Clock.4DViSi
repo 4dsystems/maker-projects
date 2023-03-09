@@ -1,0 +1,370 @@
+﻿Version     0.0
+Platform    uLCD-220RD-P
+PlatRes     220x220
+Depends
+end
+Options
+    Visualizer
+    Speed                        9600
+    Checksum                     No
+    ResponseSize                 2
+    Multidrop                    No
+    Destination                  1
+    MainForm                     0
+    SndBuf                       0
+    ButtonDisable                No
+    SignedDigits                 No
+end
+Form
+    Name                         Form1
+    Alias                        Form1
+    Bgtype                       Color
+    Color                        BLACK
+    Image                        (None)
+    Source.Height                0
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 0
+    OnActivate                   ''
+    OnCreate                     ''
+    OnRepeat                     ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+LedDigits
+    Name                         Hours
+    Alias                        Leddigits1
+    Color                        BLACK
+    Decimals                     0
+    Digits                       2
+    Height                       73
+    LeadingZero                  Yes
+    Left                         68
+    OutlineColor                 BLACK
+    Palette.High                 clLime
+    Palette.Low                  BLACK
+    Top                          16
+    Width                        94
+    OnChanged                    ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+LedDigits
+    Name                         Minutes
+    Alias                        Minutes
+    Color                        BLACK
+    Decimals                     0
+    Digits                       2
+    Height                       73
+    LeadingZero                  Yes
+    Left                         68
+    OutlineColor                 BLACK
+    Palette.High                 clLime
+    Palette.Low                  BLACK
+    Top                          100
+    Width                        94
+    OnChanged                    ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+Form
+    Name                         Form2
+    Alias                        Form2
+    Bgtype                       Color
+    Color                        BLACK
+    Image                        (None)
+    Source.Height                0
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 0
+    OnActivate                   ''
+    OnCreate                     ''
+    OnRepeat                     ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+LedDigits
+    Name                         Leddigits1
+    Alias                        Leddigits1
+    Color                        BLACK
+    Decimals                     0
+    Digits                       2
+    Height                       39
+    LeadingZero                  Yes
+    Left                         36
+    OutlineColor                 BLACK
+    Palette.High                 clLime
+    Palette.Low                  BLACK
+    Top                          40
+    Width                        58
+    OnChanged                    ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+LedDigits
+    Name                         Leddigits2
+    Alias                        Leddigits2
+    Color                        BLACK
+    Decimals                     0
+    Digits                       2
+    Height                       39
+    LeadingZero                  Yes
+    Left                         124
+    OutlineColor                 BLACK
+    Palette.High                 clLime
+    Palette.Low                  BLACK
+    Top                          40
+    Width                        58
+    OnChanged                    ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+StaticText
+    Name                         Statictext1
+    Alias                        Statictext1
+    AutoSize                     Yes
+    Caption                      HOURS
+    Color                        BLACK
+    Font.Color                   WHITE
+    Font.Effects                 []
+    Font.Name                    Tahoma
+    Font.Size                    9
+    Font.Style                   []
+    Height                       14
+    Left                         44
+    Top                          24
+    Transparent                  Yes
+    Width                        39
+    WordWrap                     Yes
+end
+StaticText
+    Name                         Statictext2
+    Alias                        Statictext2
+    AutoSize                     Yes
+    Caption                      MINUTES
+    Color                        BLACK
+    Font.Color                   WHITE
+    Font.Effects                 []
+    Font.Name                    Tahoma
+    Font.Size                    9
+    Font.Style                   []
+    Height                       14
+    Left                         124
+    Top                          24
+    Transparent                  Yes
+    Width                        51
+    WordWrap                     Yes
+end
+LedDigits
+    Name                         Leddigits4
+    Alias                        Leddigits4
+    Color                        BLACK
+    Decimals                     0
+    Digits                       2
+    Height                       39
+    LeadingZero                  Yes
+    Left                         24
+    OutlineColor                 BLACK
+    Palette.High                 clLime
+    Palette.Low                  BLACK
+    Top                          132
+    Width                        58
+    OnChanged                    ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+LedDigits
+    Name                         Leddigits5
+    Alias                        Leddigits5
+    Color                        BLACK
+    Decimals                     0
+    Digits                       2
+    Height                       39
+    LeadingZero                  Yes
+    Left                         84
+    OutlineColor                 BLACK
+    Palette.High                 clLime
+    Palette.Low                  BLACK
+    Top                          152
+    Width                        58
+    OnChanged                    ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+LedDigits
+    Name                         Leddigits6
+    Alias                        Leddigits6
+    Color                        BLACK
+    Decimals                     0
+    Digits                       2
+    Height                       39
+    LeadingZero                  Yes
+    Left                         144
+    OutlineColor                 BLACK
+    Palette.High                 clLime
+    Palette.Low                  BLACK
+    Top                          132
+    Width                        58
+    OnChanged                    ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+Rectangle
+    Name                         Rectangle1
+    Alias                        Rectangle1
+    Color                        YELLOW
+    Filled                       Yes
+    Height                       14
+    Left                         28
+    Outlined                     Yes
+    OutlineColor                 WHITE
+    Pattern                      Fine
+    Top                          176
+    Width                        53
+end
+Rectangle
+    Name                         Rectangle2
+    Alias                        Rectangle2
+    Color                        YELLOW
+    Filled                       Yes
+    Height                       14
+    Left                         84
+    Outlined                     Yes
+    OutlineColor                 WHITE
+    Pattern                      Fine
+    Top                          192
+    Width                        56
+end
+Rectangle
+    Name                         Rectangle3
+    Alias                        Rectangle3
+    Color                        YELLOW
+    Filled                       Yes
+    Height                       14
+    Left                         144
+    Outlined                     Yes
+    OutlineColor                 WHITE
+    Pattern                      Fine
+    Top                          176
+    Width                        53
+end
+StaticText
+    Name                         Statictext3
+    Alias                        Statictext3
+    AutoSize                     Yes
+    Caption                      DATE
+    Color                        BLACK
+    Font.Color                   WHITE
+    Font.Effects                 []
+    Font.Name                    Tahoma
+    Font.Size                    9
+    Font.Style                   []
+    Height                       14
+    Left                         36
+    Top                          116
+    Transparent                  Yes
+    Width                        31
+    WordWrap                     Yes
+end
+StaticText
+    Name                         Statictext4
+    Alias                        Statictext4
+    AutoSize                     Yes
+    Caption                      MONTH
+    Color                        BLACK
+    Font.Color                   WHITE
+    Font.Effects                 []
+    Font.Name                    Tahoma
+    Font.Size                    9
+    Font.Style                   []
+    Height                       14
+    Left                         92
+    Top                          136
+    Transparent                  Yes
+    Width                        42
+    WordWrap                     Yes
+end
+StaticText
+    Name                         Statictext5
+    Alias                        Statictext5
+    AutoSize                     Yes
+    Caption                      YEAR
+    Color                        BLACK
+    Font.Color                   WHITE
+    Font.Effects                 []
+    Font.Name                    Tahoma
+    Font.Size                    9
+    Font.Style                   []
+    Height                       14
+    Left                         156
+    Top                          116
+    Transparent                  Yes
+    Width                        30
+    WordWrap                     Yes
+end
+Rectangle
+    Name                         Rectangle4
+    Alias                        Rectangle4
+    Color                        YELLOW
+    Filled                       Yes
+    Height                       14
+    Left                         40
+    Outlined                     Yes
+    OutlineColor                 WHITE
+    Pattern                      Fine
+    Top                          82
+    Width                        51
+end
+Rectangle
+    Name                         Rectangle5
+    Alias                        Rectangle5
+    Color                        YELLOW
+    Filled                       Yes
+    Height                       14
+    Left                         124
+    Outlined                     Yes
+    OutlineColor                 WHITE
+    Pattern                      Fine
+    Top                          82
+    Width                        53
+end
+Rectangle
+    Name                         Rectangle6
+    Alias                        Rectangle6
+    Color                        YELLOW
+    Filled                       Yes
+    Height                       9
+    Left                         82
+    Outlined                     Yes
+    OutlineColor                 WHITE
+    Pattern                      Fine
+    Top                          125
+    Width                        61
+end
+StaticText
+    Name                         Statictext6
+    Alias                        Statictext6
+    AutoSize                     Yes
+    Caption                      DAY
+    Color                        BLACK
+    Font.Color                   WHITE
+    Font.Effects                 []
+    Font.Name                    Tahoma
+    Font.Size                    9
+    Font.Style                   []
+    Height                       14
+    Left                         96
+    Top                          84
+    Transparent                  Yes
+    Width                        24
+    WordWrap                     Yes
+end

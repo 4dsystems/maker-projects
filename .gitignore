@@ -1,0 +1,12 @@
+**/*.4DWork/*.aux
+**/*.4DWork/*.bin
+**/*.4DWork/*.err
+**/*.4DWork/*.lst
+**/*.4DWork/*.map
+**/*.4DWork/*.pjt
+**/*.4DWork/*.inc
+**/*.dat
+**/*.gci
+**/*.4XE
+**/*.cfg
+**/*.zip
